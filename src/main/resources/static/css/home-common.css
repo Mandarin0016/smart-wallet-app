@@ -1,0 +1,20 @@
+body {
+    background-color: #fff;
+}
+
+body main {
+    margin: 20px 20px 0;
+    display: flex;
+    gap: 26px;
+}
+
+.footer {
+    color: #e5e5e5;
+}
+
+.home-section {
+    height: 100%;
+    width: 100%;
+    background-color: #6edef5;
+    border-radius: 8px;
+}

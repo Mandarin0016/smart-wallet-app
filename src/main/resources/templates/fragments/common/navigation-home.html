@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/nav-side-bar.css}">
+    <title>Side-bar</title>
+</head>
+<body>
+<div th:fragment="navigation-bar (clickedButton)" class="side-bar-container">
+    <nav>
+        <div class="side_navbar">
+            <div class="func-block">
+                <span>Welcome, <strong th:text="${user.username}">Username</strong>!</span>
+                <a href="#" th:classappend="${clickedButton == 'profile'} ? 'active' : ''">Profile</a>
+                <a class="special-gold" href="#"
+                   th:classappend="${clickedButton == 'upgrade'} ? 'active-special-gold' : ''">Upgrade</a>
+            </div>
+            <div class="func-block">
+                <span>Quick Link</span>
+                <a href="#" th:classappend="${clickedButton == 'transfers'} ? 'active' : ''">Transfers</a>
+                <a href="#" th:classappend="${clickedButton == 'wallets'} ? 'active' : ''">Wallets</a>
+                <a href="#" th:classappend="${clickedButton == 'transactions'} ? 'active' : ''">Transactions</a>
+            </div>
+            <div class="func-block">
+                <span>Utility</span>
+                <a href="#" th:classappend="${clickedButton == 'currency-converter'} ? 'active' : ''">Currency
+                    Converter</a>
+                <a href="#" th:classappend="${clickedButton == 'tax-calculator'} ? 'active' : ''">Tax Calculator</a>
+            </div>
+            <div class="func-block admin-func-block" th:if="${user.role == T(app.user.model.UserRole).ADMIN}">
+                <span>Admin</span>
+                <a href="#" th:classappend="${clickedButton == 'users'} ? 'active' : ''">Users</a>
+                <a href="#" th:classappend="${clickedButton == 'revenu-reports'} ? 'active' : ''">Revenue Reports</a>
+            </div>
+            <div class="func-block">
+                <a class="logout" th:href="@{/logout}" th:classappend="${clickedButton == 'logout'} ? 'active' : ''">Logout</a>
+            </div>
+        </div>
+    </nav>
+</div>
+</body>
+</html>
