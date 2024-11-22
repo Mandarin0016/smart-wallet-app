@@ -1,7 +1,6 @@
 package app.user.property;
 
 import app.user.model.UserRole;
-import jakarta.annotation.PostConstruct;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.springframework.boot.context.properties.ConfigurationProperties;
