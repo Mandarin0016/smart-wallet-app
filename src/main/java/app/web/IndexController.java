@@ -10,31 +10,35 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
-public class HomeController {
+public class IndexController {
+
+    public static final String GET_HOME_REDIRECT = "redirect:/home";
+    public static final String GET_INDEX_REDIRECT = "redirect:/";
+    public static final String GET_INDEX_VIEW = "index";
 
     private final SessionManager sessionManager;
     private final UserService userService;
 
-    public HomeController(SessionManager sessionManager, UserService userService) {
+    public IndexController(SessionManager sessionManager, UserService userService) {
         this.sessionManager = sessionManager;
         this.userService = userService;
     }
 
     @GetMapping()
-    public ModelAndView getIndex() {
+    public String getIndex() {
 
         if (sessionManager.hasActiveSession()) {
-            return new ModelAndView("redirect:/home");
+            return GET_HOME_REDIRECT;
         }
 
-        return new ModelAndView("index");
+        return GET_INDEX_VIEW;
     }
 
     @GetMapping("/home")
     public ModelAndView getHome() {
 
         if (!sessionManager.hasActiveSession()) {
-            return new ModelAndView("redirect:/");
+            return new ModelAndView(GET_INDEX_REDIRECT);
         }
 
         User user = userService.getById(sessionManager.getUserId());
@@ -48,11 +52,12 @@ public class HomeController {
     public ModelAndView getLogin() {
 
         if (sessionManager.hasActiveSession()) {
-            return new ModelAndView("redirect:/home");
+            return new ModelAndView(GET_HOME_REDIRECT);
         }
 
         ModelAndView modelAndView = new ModelAndView("login");
         modelAndView.addObject("loginRequest", new LoginRequest());
+
         return modelAndView;
     }
 
@@ -60,7 +65,7 @@ public class HomeController {
     public ModelAndView getRegister() {
 
         if (sessionManager.hasActiveSession()) {
-            return new ModelAndView("redirect:/home");
+            return new ModelAndView(GET_HOME_REDIRECT);
         }
 
         ModelAndView modelAndView = new ModelAndView("register");
@@ -70,9 +75,9 @@ public class HomeController {
     }
 
     @GetMapping("/logout")
-    public ModelAndView getLogout() {
+    public String getLogout() {
 
         sessionManager.terminateCurrentSession();
-        return new ModelAndView("redirect:/");
+        return GET_INDEX_REDIRECT;
     }
 }

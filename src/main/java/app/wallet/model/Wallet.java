@@ -2,6 +2,7 @@ package app.wallet.model;
 
 import app.user.model.User;
 import jakarta.persistence.*;
+import java.util.Currency;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -35,6 +36,9 @@ public class Wallet {
 
     @Column(nullable = false)
     private BigDecimal balance;
+
+    @Column(nullable = false)
+    private Currency currency;
 
     private long currentTransferCount;
 

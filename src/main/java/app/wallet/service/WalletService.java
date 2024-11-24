@@ -4,6 +4,7 @@ import app.user.model.User;
 import app.wallet.model.Wallet;
 import app.wallet.property.WalletProperties;
 import app.wallet.repository.WalletRepository;
+import java.util.Currency;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -49,6 +50,7 @@ public class WalletService {
         return Wallet.builder()
                 .id(UUID.randomUUID())
                 .owner(owner)
+                .currency(Currency.getInstance("EUR"))
                 .type(STANDARD)
                 .status(standardWalletProperties.getDefaultStatus())
                 .balance(standardWalletProperties.getInitialBalance())

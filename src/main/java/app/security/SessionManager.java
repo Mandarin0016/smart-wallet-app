@@ -37,7 +37,7 @@ public class SessionManager {
     public void activeUserSession(UUID userId) {
         this.userId = userId;
         this.loggedAt = LocalDateTime.now();
-        this.expireAt = loggedAt.plusMinutes(5);
+        this.expireAt = loggedAt.plusMinutes(55);
     }
 
     public void terminateCurrentSession() {

@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import static app.web.IndexController.GET_HOME_REDIRECT;
+
 @Controller
 @RequestMapping("/users")
 public class UserController {
@@ -38,7 +40,7 @@ public class UserController {
             return modelAndView;
         }
 
-        ModelAndView modelAndView = new ModelAndView("redirect:/home");
+        ModelAndView modelAndView = new ModelAndView(GET_HOME_REDIRECT);
         modelAndView.addObject("user", loggedUser);
         sessionManager.activeUserSession(loggedUser.getId());
 
@@ -59,7 +61,7 @@ public class UserController {
             return modelAndView;
         }
 
-        ModelAndView modelAndView = new ModelAndView("redirect:/home");
+        ModelAndView modelAndView = new ModelAndView(GET_HOME_REDIRECT);
         modelAndView.addObject("user", loggedUser);
         sessionManager.activeUserSession(loggedUser.getId());
 
