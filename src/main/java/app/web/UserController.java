@@ -1,70 +1,97 @@
 package app.web;
 
-import app.security.SessionManager;
+import app.security.RequiresSelfUserAction;
 import app.user.model.User;
 import app.user.service.UserService;
 import app.web.dto.LoginRequest;
 import app.web.dto.RegisterRequest;
+import app.web.dto.UserEditRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import static app.web.IndexController.GET_HOME_REDIRECT;
+import java.util.UUID;
+
+import static app.security.SessionInterceptor.USER_ID_FROM_SESSION;
 
 @Controller
 @RequestMapping("/users")
 public class UserController {
 
     private final UserService userService;
-    private final SessionManager sessionManager;
 
-    public UserController(UserService userService, SessionManager sessionManager) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.sessionManager = sessionManager;
     }
 
     @PostMapping("/login")
-    public ModelAndView login(@Valid LoginRequest loginRequest, BindingResult result) {
+    public ModelAndView login(@Valid LoginRequest loginRequest, BindingResult result, HttpSession session) {
 
         if (result.hasErrors()) {
-            return new ModelAndView("/login");
+            return new ModelAndView("login");
         }
 
         User loggedUser = userService.login(loginRequest);
-        if (loggedUser == null) {
-            ModelAndView modelAndView = new ModelAndView("/login");
-            modelAndView.addObject("invalidCredentials", "Invalid username or password.");
-            return modelAndView;
+        activateUserSession(session, loggedUser.getId());
+
+        return getHomePageForUser(loggedUser);
+    }
+
+    @PostMapping("/register")
+    public ModelAndView register(@Valid RegisterRequest registerRequest, BindingResult result, HttpSession session) {
+
+        if (result.hasErrors()) {
+            return new ModelAndView("register");
         }
 
-        ModelAndView modelAndView = new ModelAndView(GET_HOME_REDIRECT);
+        User registeredUser = userService.register(registerRequest);
+        activateUserSession(session, registeredUser.getId());
+
+        return getHomePageForUser(registeredUser);
+    }
+
+    private void activateUserSession(HttpSession session, UUID userId) {
+
+        session.setAttribute(USER_ID_FROM_SESSION, userId);
+    }
+
+    private static ModelAndView getHomePageForUser(User loggedUser) {
+
+        ModelAndView modelAndView = new ModelAndView("redirect:/home");
         modelAndView.addObject("user", loggedUser);
-        sessionManager.activeUserSession(loggedUser.getId());
 
         return modelAndView;
     }
 
-    @PostMapping("/register")
-    public ModelAndView register(@Valid RegisterRequest registerRequest, BindingResult result) {
+    @RequiresSelfUserAction
+    @GetMapping("/{userId}/edit-profile-menu")
+    public ModelAndView getProfileMenu(@PathVariable UUID userId) {
 
-        if (result.hasErrors()) {
-            return new ModelAndView("/register");
-        }
+        User user = userService.getById(userId);
 
-        User loggedUser = userService.register(registerRequest);
-        if (loggedUser == null) {
-            ModelAndView modelAndView = new ModelAndView("/register");
-            modelAndView.addObject("usernameAlreadyInUse", "Username already exist.");
-            return modelAndView;
-        }
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.addObject("user", user);
+        modelAndView.addObject("userEditRequest", UserEditRequest.buildFromUser(user));
+        modelAndView.setViewName("profile-menu");
 
-        ModelAndView modelAndView = new ModelAndView(GET_HOME_REDIRECT);
-        modelAndView.addObject("user", loggedUser);
-        sessionManager.activeUserSession(loggedUser.getId());
+        return modelAndView;
+    }
 
+    @RequiresSelfUserAction
+    @PostMapping("/{userId}/edit-profile-menu")
+    public ModelAndView submitEditProfileMenu(@PathVariable UUID userId, @Valid UserEditRequest userEditRequest) {
+
+        User updatedUser = userService.editUser(userId, userEditRequest);
+
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.addObject("user", updatedUser);
+        modelAndView.setViewName("home");
         return modelAndView;
     }
 }

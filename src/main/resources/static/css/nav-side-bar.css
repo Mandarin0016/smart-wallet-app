@@ -1,8 +1,13 @@
+.nav-bar {
+  height: 100%;
+}
+
 .side-bar-container {
   background-color: #ffffff;
   width: 240px;
+  height: 100%;
   border-radius: 12px;
-  padding: 20px;
+  padding-inline: 20px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.04);
   font-family: 'Poppins', sans-serif;
 }
@@ -26,11 +31,9 @@
   font-weight: 300;
   margin-bottom: 10px;
   display: block;
-  border-radius: 8px;
-  background: linear-gradient(10deg, #6edef5, #2b589f, #38368f, #1e1d3d);
+  background: radial-gradient(ellipse at top, #746ab0 0%, #a095e6 10%, #faf9f9 20%, #c5bfff 30%, #978ef1 40%, #7871f6 50%, #817cff 60%, #8eafe9 70%, #a1a1ff 80%, #a8a8ff 90%, #6d78f3 100%);
   background-size: 200%;
   background-clip: text;
-  border: 1px solid rgba(39, 90, 222, 0.1);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   padding: 8px 12px;
@@ -100,21 +103,12 @@
   color: white;
 }
 
-.func-block.admin-func-block {
-  border-radius: 8px;
-  background: transparent;
-  box-shadow: 0 4px 8px rgba(39, 90, 222, 0.15);
-  border: 1px solid rgba(39, 90, 222, 0.2);
-}
-
 .smart-wallet-nav-bar {
   display: flex;
   padding: 20px 0;
   width: 100%;
-  color: #6edef5;
-  background: radial-gradient(circle at 90% top, #746ab0 0%, #6a61a4 10%, #605899 20%, #56508d 30%, #4c477f 40%, #423f73 50%, #383666 60%, #2e2d5a 70%, #24244d 80%, #1a1a41 90%, #101035 100%);
+  background: radial-gradient(ellipse at top, #746ab0 0%, #a095e6 10%, #faf9f9 20%, #c5bfff 30%, #978ef1 40%, #7871f6 50%, #817cff 60%, #8eafe9 70%, #a1a1ff 80%, #a8a8ff 90%, #6d78f3 100%);
   background-size: 200%;
-  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -129,7 +123,6 @@
   font-weight: 300;
   display: inline-block;
   background: transparent;
-  border: 1px solid rgba(39, 90, 222, 0.1);
 }
 
 .smart-wallet-nav-bar-version {

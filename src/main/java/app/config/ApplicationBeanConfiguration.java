@@ -12,11 +12,4 @@ public class ApplicationBeanConfiguration {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
-//    @Bean
-//    public Gson gson() {
-//        return new GsonBuilder()
-//                .setPrettyPrinting()
-//                .create();
-//    }
 }

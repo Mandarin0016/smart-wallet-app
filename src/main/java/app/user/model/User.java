@@ -28,6 +28,8 @@ public class User {
 
     private String lastName;
 
+    private String profilePicture;
+
     @Column(unique = true)
     private String email;
 
@@ -51,6 +53,6 @@ public class User {
     @OneToOne
     private Subscription subscription;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     private List<Wallet> wallets;
 }

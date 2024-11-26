@@ -123,7 +123,6 @@
   z-index: 1;
 }
 
-
 .single-section-box.home-profile-information::before {
   width: 350px;
   height: 190px;
@@ -260,7 +259,7 @@
   gap: 10px;
   font-size: 12px;
   color: #666;
-  margin-top: auto;
+  margin-top: 10px;
 }
 
 .details-section-container {
@@ -343,5 +342,5 @@
 
 
 .home-profile-information a.profile-actions-button {
-  margin-top: 80px;
+  margin-top: 40px;
 }

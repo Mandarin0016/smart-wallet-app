@@ -6,6 +6,7 @@ import app.subscription.model.SubscriptionStatus;
 import app.subscription.property.SubscriptionProperties;
 import app.subscription.repository.SubscriptionRepository;
 import app.user.model.User;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -16,6 +17,7 @@ import java.util.UUID;
 import static app.subscription.model.SubscriptionType.DEFAULT;
 
 @Service
+@Slf4j
 public class SubscriptionService {
 
     private final SubscriptionRepository repository;
@@ -36,6 +38,7 @@ public class SubscriptionService {
         }
 
         Subscription subscription = initializeNewDefaultUserSubscription(newUser);
+        log.info("Successfully created new [%s] subscription with id [%s].".formatted(subscription.getType(), subscription.getId()));
 
         return repository.save(subscription);
     }

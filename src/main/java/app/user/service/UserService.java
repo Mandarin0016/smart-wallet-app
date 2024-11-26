@@ -1,5 +1,6 @@
 package app.user.service;
 
+import app.exception.DomainException;
 import app.subscription.model.Subscription;
 import app.subscription.service.SubscriptionService;
 import app.user.model.User;
@@ -9,17 +10,20 @@ import app.wallet.model.Wallet;
 import app.wallet.service.WalletService;
 import app.web.dto.LoginRequest;
 import app.web.dto.RegisterRequest;
+import app.web.dto.UserEditRequest;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@Slf4j
 public class UserService {
 
     private final PasswordEncoder passwordEncoder;
@@ -44,12 +48,12 @@ public class UserService {
 
         Optional<User> userOptional = userRepository.findByUsername(loginRequest.getUsername());
         if (userOptional.isEmpty()) {
-            return null;
+            throw new DomainException("User with username=[%s] does not exist.".formatted(loginRequest.getUsername()), HttpStatus.BAD_REQUEST);
         }
 
         User user = userOptional.get();
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-            return null;
+            throw new DomainException("Login attempt with incorrect password for user with id [%s].".formatted(user.getId()), HttpStatus.BAD_REQUEST);
         }
 
         return user;
@@ -60,10 +64,7 @@ public class UserService {
 
         Optional<User> userOptional = userRepository.findByUsername(registerRequest.getUsername());
         if (userOptional.isPresent()) {
-            //TODO: throw exception 2 stages:
-            // 1. no handling - Spring Fundamentals
-            // 2. handling - Spring Advanced
-            return null;
+            throw new DomainException("User with username=[%s] already exist.".formatted(registerRequest.getUsername()), HttpStatus.BAD_REQUEST);
         }
 
         User user = userRepository.save(initializeNewUserAccount(registerRequest));
@@ -74,6 +75,8 @@ public class UserService {
         ArrayList<Wallet> userWallets = new ArrayList<>();
         userWallets.add(standardWallet);
         user.setWallets(userWallets);
+
+        log.info("Successfully created new user for username [%s] with id [%s].".formatted(user.getUsername(), user.getId()));
 
         return userRepository.save(user);
     }
@@ -93,6 +96,22 @@ public class UserService {
     }
 
     public User getById(UUID userId) {
-        return userRepository.findById(userId).orElse(null);
+
+        return userRepository
+                .findById(userId)
+                .orElseThrow(() -> new DomainException("User with id [%s] does not exist.".formatted(userId), HttpStatus.BAD_REQUEST));
+    }
+
+    public User editUser(UUID userId, UserEditRequest userEditRequest) {
+
+        User user = getById(userId);
+
+        user.setFirstName(userEditRequest.getFirstName().trim());
+        user.setLastName(userEditRequest.getLastName().trim());
+        user.setEmail(userEditRequest.getEmail().trim());
+        user.setProfilePicture(userEditRequest.getProfilePicture().trim());
+        user.setUpdatedOn(LocalDateTime.now());
+
+        return userRepository.save(user);
     }
 }
