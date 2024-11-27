@@ -16,6 +16,7 @@ import java.util.UUID;
 public class SessionInterceptor implements HandlerInterceptor {
 
     public static final Set<String> UNAUTHENTICATED_ENDPOINTS = Set.of("/login", "/register", "/users/login", "/users/register", "/");
+    public static final Set<String> RESOURCES_ENDPOINTS = Set.of("/css/**", "/register", "/users/login", "/users/register", "/");
     public static final String USER_ID_FROM_SESSION = "user_id";
 
     @Override

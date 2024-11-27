@@ -1,6 +1,6 @@
 package app.transaction.model;
 
-import app.wallet.model.Wallet;
+import app.user.model.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Currency;
 import java.util.UUID;
 
 @Entity
@@ -23,18 +24,31 @@ public class Transaction {
     private UUID id;
 
     @ManyToOne
-    private Wallet sender;
+    private User owner;
 
-    @ManyToOne
-    private Wallet receiver;
+    @Column(nullable = false)
+    private String sender;
+
+    @Column(nullable = false)
+    private String receiver;
 
     @Column(nullable = false)
     private BigDecimal amount;
 
     @Column(nullable = false)
-    private TransactionStatus status;
+    private BigDecimal balanceLeft;
 
     @Column(nullable = false)
+    private Currency currency;
+
+    @Column(nullable = false)
+    private TransactionType type;
+
+    @Column(nullable = false)
+    private TransactionStatus status;
+
+    private String description;
+
     private String failureReason;
 
     @Column(nullable = false)

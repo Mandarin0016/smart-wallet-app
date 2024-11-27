@@ -72,7 +72,7 @@
            th:classappend="${user.wallets[0].status == T(app.wallet.model.WalletStatus).ACTIVE} ? 'active-wallet-status' : 'inactive-wallet-status'">STATUS</p>
       </div>
       <div class="wallet-balance">
-        <p class="balance" th:text="${#numbers.formatDecimal(user.wallets[0].balance, 0, 'COMMA', 2, 'POINT') + ' ' + user.wallets[0].currency}"></p>
+        <p class="balance" th:text="${#numbers.formatDecimal(user.wallets[0].balance, 1, 'COMMA', 2, 'POINT') + ' ' + user.wallets[0].currency}"></p>
         <p class="available-balance-text">Available Balance</p>
       </div>
 
@@ -95,14 +95,14 @@
           <p th:text="${user.wallets[0].id}">Wallet id</p>
         </div>
         <div class="details-section-container">
-          <strong>Wallet created on: </strong>
-          <p th:text="${#temporals.format(user.wallets[0].createdOn, 'dd MMM yyyy HH:mm')}">Wallet is created on</p>
+          <strong>Last transaction on: </strong>
+          <p th:text="${#temporals.format(user.wallets[0].updatedOn, 'dd MMM yyyy HH:mm')}">Wallet is created on</p>
         </div>
       </div>
     </div>
     <div class="single-section-box home-subscription">
       <div class="default-label-box">
-        <p>Default Subscription</p>
+        <p th:text="${#strings.toUpperCase(user.subscriptions.get(0).type + ' SUBSCRIPTION')}">[Mock subscription text]</p>
       </div>
       <table class="styled-table">
         <thead>
@@ -115,18 +115,18 @@
         </thead>
         <tbody>
         <tr>
-          <th:block th:switch="${user.subscription.status.toString()}">
+          <th:block th:switch="${user.subscriptions.getFirst().status.toString()}">
             <td th:case="'ACTIVE'"><span class="status active" th:text="'ACTIVE'"></span></td>
             <td th:case="'COMPLETED'"><span class="status completed" th:text="'COMPLETED'"></span></td>
             <td th:case="'TERMINATED'"><span class="status terminated" th:text="'TERMINATED'"></span></td>
           </th:block>
-          <td th:text="${#strings.capitalize(#strings.toLowerCase(user.subscription.period))}">YEARLY</td>
-          <td th:text="${#numbers.formatDecimal(user.subscription.price, 1, 'COMMA', 2, 'POINT') + ' ' + user.wallets[0].currency}">0.00 USD</td>
-          <td th:text="${user.subscription.renewalAllowed ? 'Automatic' : 'Manual'}">Automatic</td>
+          <td th:text="${#strings.capitalize(#strings.toLowerCase(user.subscriptions.getFirst().period))}">YEARLY</td>
+          <td th:text="${#numbers.formatDecimal(user.subscriptions.getFirst().price, 1, 'COMMA', 2, 'POINT') + ' ' + user.wallets[0].currency}">0.00 USD</td>
+          <td th:text="${user.subscriptions.getFirst().renewalAllowed ? 'Automatic' : 'Manual'}">Automatic</td>
         </tr>
         </tbody>
       </table>
-      <a class="profile-actions-button" href="#" th:classappend="${clickedButton == 'dashboard'} ? 'active' : ''">
+      <a class="profile-actions-button" th:href="@{/subscriptions}">
         <p>Change</p>
         <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
              width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
@@ -138,11 +138,11 @@
       <div class="details-section">
         <div class="details-section-container">
           <strong>Subscription id: </strong>
-          <p th:text="${user.subscription.id}">subscription id</p>
+          <p th:text="${user.subscriptions.getFirst().id}">subscription id</p>
         </div>
         <div class="details-section-container">
           <strong>Subscribe until: </strong>
-          <p th:text="${#temporals.format(user.subscription.completedOn, 'dd MMM yyyy HH:mm')}">date that subscription will be completed</p>
+          <p th:text="${#temporals.format(user.subscriptions.getFirst().completedOn, 'dd MMM yyyy HH:mm')}">date that subscription will be completed</p>
         </div>
       </div>
     </div>

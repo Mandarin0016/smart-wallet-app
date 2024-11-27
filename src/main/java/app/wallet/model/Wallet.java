@@ -3,10 +3,8 @@ package app.wallet.model;
 import app.user.model.User;
 import jakarta.persistence.*;
 import java.util.Currency;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -15,6 +13,7 @@ import java.util.UUID;
 @Entity
 @Builder
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Wallet {
@@ -39,10 +38,6 @@ public class Wallet {
 
     @Column(nullable = false)
     private Currency currency;
-
-    private long currentTransferCount;
-
-    private long maxTransferCount;
 
     @Column(nullable = false)
     private LocalDateTime createdOn;

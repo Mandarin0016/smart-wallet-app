@@ -1,6 +1,7 @@
 package app.subscription.repository;
 
 import app.subscription.model.Subscription;
+import app.subscription.model.SubscriptionStatus;
 import app.subscription.model.SubscriptionType;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -11,4 +12,5 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, UUID
 
     Optional<Subscription> findByTypeAndOwnerId(SubscriptionType type, UUID ownerId);
 
+    Optional<Subscription> findByStatusAndOwnerId(SubscriptionStatus status, UUID ownerId);
 }

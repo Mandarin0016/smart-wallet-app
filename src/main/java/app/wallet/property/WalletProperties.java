@@ -11,7 +11,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
 import java.math.BigDecimal;
-import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
 
@@ -38,9 +37,5 @@ public class WalletProperties {
 
         @NotNull
         private WalletStatus defaultStatus;
-
-        @Min(1)
-        @Max(Long.MAX_VALUE)
-        private long maxTransferCount = Long.MAX_VALUE;
     }
 }

@@ -71,7 +71,10 @@ public class UserService {
         Subscription defaultSubscription = subscriptionService.createNewDefaultSubscriptionForNewUser(user);
         Wallet standardWallet = walletService.createNewStandardWalletForNewUser(user);
 
-        user.setSubscription(defaultSubscription);
+        ArrayList<Subscription> userSubscriptions = new ArrayList<>();
+        userSubscriptions.add(defaultSubscription);
+        user.setSubscriptions(userSubscriptions);
+
         ArrayList<Wallet> userWallets = new ArrayList<>();
         userWallets.add(standardWallet);
         user.setWallets(userWallets);

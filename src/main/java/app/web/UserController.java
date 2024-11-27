@@ -91,7 +91,7 @@ public class UserController {
 
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.addObject("user", updatedUser);
-        modelAndView.setViewName("home");
+        modelAndView.setViewName("redirect:/home");
         return modelAndView;
     }
 }

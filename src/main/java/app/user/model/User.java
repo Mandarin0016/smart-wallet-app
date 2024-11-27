@@ -50,9 +50,11 @@ public class User {
     @Column(nullable = false)
     private LocalDateTime updatedOn;
 
-    @OneToOne
-    private Subscription subscription;
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "owner")
+    @OrderBy("createdOn DESC")
+    private List<Subscription> subscriptions;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "owner")
+    @OrderBy("createdOn ASC")
     private List<Wallet> wallets;
 }
