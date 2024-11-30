@@ -59,6 +59,7 @@ public class UserController {
     private void activateUserSession(HttpSession session, UUID userId) {
 
         session.setAttribute(USER_ID_FROM_SESSION, userId);
+        session.setMaxInactiveInterval(30*60);
     }
 
     private static ModelAndView getHomePageForUser(User loggedUser) {

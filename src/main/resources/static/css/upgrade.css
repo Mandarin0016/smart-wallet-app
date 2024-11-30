@@ -189,10 +189,6 @@ form.form select {
     transition: background-color 0.3s ease;
 }
 
-.subscription-action-button.disabled {
-    cursor: not-allowed;
-}
-
 .subscription-action-button {
     align-self: center;
     text-align: center;
