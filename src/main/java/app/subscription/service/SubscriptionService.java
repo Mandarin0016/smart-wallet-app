@@ -15,6 +15,7 @@ import app.web.dto.UpgradeOption;
 import app.web.dto.UpgradeRequest;
 import app.web.dto.UpgradeResult;
 import jakarta.transaction.Transactional;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -51,20 +52,20 @@ public class SubscriptionService {
             return optionalSubscription.get();
         }
 
-        Subscription subscription = createNewUserSubscription(newUser, DEFAULT, properties.getDefaultPeriod(), BigDecimal.ZERO);
+        Subscription subscription = buildNewUserSubscription(newUser, DEFAULT, properties.getDefaultPeriod(), BigDecimal.ZERO);
         log.info("Successfully created new [%s] subscription with id [%s].".formatted(subscription.getType(), subscription.getId()));
 
         return repository.save(subscription);
     }
 
-    private Subscription createNewUserSubscription(User owner, SubscriptionType type, SubscriptionPeriod period, BigDecimal price) {
+    private Subscription buildNewUserSubscription(User owner, SubscriptionType type, SubscriptionPeriod period, BigDecimal price) {
 
         LocalDateTime createdOn = LocalDateTime.now();
         LocalDateTime completedOn = LocalDateTime.now();
         if (period == SubscriptionPeriod.YEARLY) {
-            completedOn.plusMonths(12);
+            completedOn = completedOn.plusMonths(12);
         } else {
-            completedOn.plusMonths(1);
+            completedOn = completedOn.plusMonths(1);
         }
 
         return Subscription.builder()
@@ -77,7 +78,6 @@ public class SubscriptionService {
                 .renewalAllowed(period == SubscriptionPeriod.MONTHLY)
                 .createdOn(createdOn)
                 .completedOn(completedOn)
-                .terminationReason(null)
                 .build();
     }
 
@@ -133,7 +133,7 @@ public class SubscriptionService {
                     .build();
         }
 
-        Subscription newUserSubscription = createNewUserSubscription(user, desiredSubscriptionType, desiredSubscriptionPeriod, price);
+        Subscription newUserSubscription = buildNewUserSubscription(user, desiredSubscriptionType, desiredSubscriptionPeriod, price);
         userSubscription.setCompletedOn(LocalDateTime.now());
         userSubscription.setStatus(SubscriptionStatus.COMPLETED);
 
@@ -173,5 +173,10 @@ public class SubscriptionService {
                 .yearlyPrice(properties.getUpgradeOptions().get(type).getYearlyPrice())
                 .isChoosable(true)
                 .build();
+    }
+
+    public List<Subscription> getHistory(UUID userId) {
+
+        return repository.findByOwnerIdOrderByCreatedOnDesc(userId);
     }
 }

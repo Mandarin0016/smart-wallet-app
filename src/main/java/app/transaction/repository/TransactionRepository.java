@@ -8,9 +8,7 @@ import java.util.UUID;
 
 public interface TransactionRepository extends JpaRepository<Transaction, UUID> {
 
-    // Ivan -> Gosho (20 $):
-    // 1. Transaction (WITHDRAWAL for Ivan -20 $)
-    // 2. Transaction (DEPOSIT for Gosho +20 $)
     List<Transaction> findAllByOwnerIdOrderByCreatedOnDesc(UUID ownerId);
 
+    List<Transaction> findAllBySenderOrReceiverOrderByCreatedOnDesc(String sender, String receiver);
 }

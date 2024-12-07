@@ -5,7 +5,11 @@ import jakarta.validation.constraints.Positive;
 
 import java.math.BigDecimal;
 import java.util.UUID;
+import lombok.Data;
+import lombok.Getter;
 
+@Getter
+@Data
 public class TransferRequest {
 
     private UUID fromWalletId;

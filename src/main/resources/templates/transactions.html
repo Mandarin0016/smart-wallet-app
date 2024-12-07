@@ -50,7 +50,7 @@
                     <td th:text="${#numbers.formatDecimal(transaction.balanceLeft, 1, 'COMMA', 2, 'POINT') + ' ' + transaction.currency}">
                         [balance left]
                     </td>
-                    <td th:text="${transaction.status.name() == 'FAILED'} ? ${transaction.failureReason} : ${transaction.description}">
+                    <td style="text-align: left" th:text="${transaction.status.name() == 'FAILED'} ? ${transaction.failureReason} : ${transaction.description}">
                         [note]
                     </td>
                     <td th:text="${#temporals.format(transaction.createdOn, 'dd MMM yyyy HH:mm')}">

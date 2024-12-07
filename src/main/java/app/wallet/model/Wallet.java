@@ -27,10 +27,6 @@ public class Wallet {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private WalletType type;
-
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
     private WalletStatus status;
 
     @Column(nullable = false)

@@ -1,13 +1,17 @@
 package app.web;
 
+import app.security.RequireAdminRole;
 import app.security.RequiresSelfUserAction;
 import app.user.model.User;
 import app.user.service.UserService;
 import app.web.dto.LoginRequest;
 import app.web.dto.RegisterRequest;
 import app.web.dto.UserEditRequest;
+import app.web.dto.UserInformation;
+import app.web.mapper.DtoMapper;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import java.util.List;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,6 +32,34 @@ public class UserController {
 
     public UserController(UserService userService) {
         this.userService = userService;
+    }
+
+    @GetMapping
+    @RequireAdminRole
+    public ModelAndView getAllUsers(HttpSession session) {
+
+        UUID userId = (UUID) session.getAttribute(USER_ID_FROM_SESSION);
+        User loggedUser = userService.getById(userId);
+
+        List<UserInformation> users = userService.getAllUsers().stream()
+                .map(DtoMapper::toUserInformation)
+                .toList();
+
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.addObject("user", loggedUser);
+        modelAndView.addObject("users", users);
+        modelAndView.setViewName("users");
+
+        return modelAndView;
+    }
+
+    @GetMapping("/{userId}/switch-status")
+    @RequireAdminRole
+    public String switchUserStatus(@PathVariable UUID userId) {
+
+        userService.switchStatus(userId);
+
+        return "redirect:/users";
     }
 
     @PostMapping("/login")

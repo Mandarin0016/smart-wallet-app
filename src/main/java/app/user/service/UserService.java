@@ -12,6 +12,7 @@ import app.web.dto.LoginRequest;
 import app.web.dto.RegisterRequest;
 import app.web.dto.UserEditRequest;
 import jakarta.transaction.Transactional;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -68,15 +69,15 @@ public class UserService {
         }
 
         User user = userRepository.save(initializeNewUserAccount(registerRequest));
-        Subscription defaultSubscription = subscriptionService.createNewDefaultSubscriptionForNewUser(user);
-        Wallet standardWallet = walletService.createNewStandardWalletForNewUser(user);
 
+        Subscription defaultSubscription = subscriptionService.createNewDefaultSubscriptionForNewUser(user);
         ArrayList<Subscription> userSubscriptions = new ArrayList<>();
         userSubscriptions.add(defaultSubscription);
         user.setSubscriptions(userSubscriptions);
 
+        Wallet wallet = walletService.createNewWallet(user);
         ArrayList<Wallet> userWallets = new ArrayList<>();
-        userWallets.add(standardWallet);
+        userWallets.add(wallet);
         user.setWallets(userWallets);
 
         log.info("Successfully created new user for username [%s] with id [%s].".formatted(user.getUsername(), user.getId()));
@@ -116,5 +117,20 @@ public class UserService {
         user.setUpdatedOn(LocalDateTime.now());
 
         return userRepository.save(user);
+    }
+
+    public List<User> getAllUsers() {
+
+        return userRepository.findAll();
+    }
+
+    public void switchStatus(UUID userId) {
+
+        User user = getById(userId);
+
+        user.setUpdatedOn(LocalDateTime.now());
+        user.setActive(!user.isActive());
+
+        userRepository.save(user);
     }
 }

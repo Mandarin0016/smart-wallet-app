@@ -45,6 +45,4 @@ public class Subscription {
 
     @Column(nullable = false)
     private LocalDateTime completedOn;
-
-    private String terminationReason;
 }

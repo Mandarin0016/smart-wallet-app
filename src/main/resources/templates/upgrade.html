@@ -59,7 +59,7 @@
                 <select name="wallet-id" th:field="*{walletId}">
                     <option th:each="wallet : ${user.wallets}"
                             th:value="${wallet.id}"
-                            th:text="${wallet.type + ' Wallet - ' + wallet.balance + ' ' + wallet.currency}"></option>
+                            th:text="${'Standard Wallet - ' + wallet.balance + ' ' + wallet.currency}"></option>
                 </select>
                 <!-- Buttons does not support th:field and th:value, so we can use name(pick the object field) value(the value to be bind to that field)-->
                 <button th:if="${upgradeOptions.get('DEFAULT').isChoosable()}"
@@ -115,7 +115,7 @@
                 <select name="wallet-id" th:field="*{walletId}">
                     <option th:each="wallet : ${user.wallets}"
                             th:value="${wallet.id}"
-                            th:text="${wallet.type + ' Wallet - ' + wallet.balance + ' ' + wallet.currency}"></option>
+                            th:text="${'Standard Wallet - ' + wallet.balance + ' ' + wallet.currency}"></option>
                 </select>
                 <button th:if="${upgradeOptions.get('PREMIUM').isChoosable()}" class="subscription-action-button"
                         type="submit" name="subscriptionType" id="PREMIUM" value="PREMIUM">
@@ -169,7 +169,7 @@
                 <select name="wallet-id" th:field="*{walletId}">
                     <option th:each="wallet : ${user.wallets}"
                             th:value="${wallet.id}"
-                            th:text="${wallet.type + ' Wallet - ' + wallet.balance + ' ' + wallet.currency}"></option>
+                            th:text="${'Standard Wallet - ' + wallet.balance + ' ' + wallet.currency}"></option>
                 </select>
                 <button th:if="${upgradeOptions.get('ULTIMATE').isChoosable()}" class="subscription-action-button"
                         type="submit" name="subscriptionType" id="ULTIMATE" value="ULTIMATE">

@@ -3,8 +3,10 @@ package app.web;
 import app.transaction.service.TransactionService;
 import app.user.model.User;
 import app.user.service.UserService;
+import app.web.mapper.DtoMapper;
 import app.web.dto.TransactionResult;
 import jakarta.servlet.http.HttpSession;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,7 +37,9 @@ public class TransactionController {
         UUID userId = (UUID) session.getAttribute(USER_ID_FROM_SESSION);
         User user = userService.getById(userId);
 
-        List<TransactionResult> transactions = transactionService.getAllTransactions(userId);
+        List<TransactionResult> transactions = transactionService.getAllTransactions(userId).stream()
+                .map(DtoMapper::toTransactionResult)
+                .collect(Collectors.toList());
 
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.addObject("user", user);

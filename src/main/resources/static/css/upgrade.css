@@ -171,9 +171,10 @@ form.form label {
 
 form.form select {
     height: 40px;
-    background-color: rgba(255, 255, 255, 0.07);
-    box-shadow: 0 0 16px 2px rgba(176, 176, 176, 0.15);
+    background-color: #f8f9fa;
+    box-shadow: 0 0 16px 2px rgba(217, 217, 217, 0.1);
     border: none;
+    border-radius: 8px;
     padding: 0 10px;
     font-size: 14px;
     font-family: 'Poppins', sans-serif;

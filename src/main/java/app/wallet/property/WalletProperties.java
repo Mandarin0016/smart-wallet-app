@@ -1,7 +1,6 @@
 package app.wallet.property;
 
 import app.wallet.model.WalletStatus;
-import app.wallet.model.WalletType;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.Data;
@@ -11,8 +10,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
 import java.math.BigDecimal;
-import java.time.temporal.ChronoUnit;
-import java.util.Map;
 
 @Getter
 @Setter
@@ -22,11 +19,7 @@ public class WalletProperties {
 
     @Valid
     @NotNull
-    private Map<WalletType, DefaultWalletProperty> walletToDefaultProperties;
-    @NotNull
-    private ChronoUnit savingPeriodUnit;
-    @Positive
-    private int savingPeriodDuration;
+    private DefaultWalletProperty defaultWalletProperties;
 
     @Data
     public static class DefaultWalletProperty {

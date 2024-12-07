@@ -42,9 +42,11 @@ public class Transaction {
     private Currency currency;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private TransactionType type;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private TransactionStatus status;
 
     private String description;

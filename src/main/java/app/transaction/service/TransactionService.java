@@ -5,7 +5,7 @@ import app.transaction.model.TransactionStatus;
 import app.transaction.model.TransactionType;
 import app.transaction.repository.TransactionRepository;
 import app.user.model.User;
-import app.web.dto.TransactionResult;
+import app.wallet.model.Wallet;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -20,10 +20,13 @@ public class TransactionService {
     private final TransactionRepository repository;
 
     public TransactionService(TransactionRepository repository) {
+
         this.repository = repository;
     }
 
-    public Transaction createNewTransaction(User owner, String from, String to, BigDecimal amount, BigDecimal balanceLeft, Currency currency, TransactionStatus transactionStatus, TransactionType transactionType, String description, String failureReason) {
+    public Transaction createNewTransaction(User owner, String from, String to, BigDecimal amount,
+            BigDecimal balanceLeft, Currency currency, TransactionStatus transactionStatus,
+            TransactionType transactionType, String description, String failureReason) {
 
         Transaction transaction = Transaction.builder()
                 .id(UUID.randomUUID())
@@ -43,25 +46,18 @@ public class TransactionService {
         return repository.save(transaction);
     }
 
-    public List<TransactionResult> getAllTransactions(UUID userId) {
+    public List<Transaction> getLastFourTransactions(Wallet wallet) {
 
-        List<Transaction> allUserTransactions = repository.findAllByOwnerIdOrderByCreatedOnDesc(userId);
-
-        return allUserTransactions.stream().map(this::toTransactionResult).toList();
+        return repository.findAllBySenderOrReceiverOrderByCreatedOnDesc(wallet.getId().toString(), wallet.getId().toString())
+                .stream()
+                .filter(t -> t.getStatus() == TransactionStatus.SUCCEEDED)
+                .filter(t -> t.getOwner().getId().equals(wallet.getOwner().getId()))
+                .limit(4)
+                .toList();
     }
 
-    private TransactionResult toTransactionResult(Transaction transaction) {
+    public List<Transaction> getAllTransactions(UUID userId) {
 
-        return TransactionResult.builder()
-                .id(transaction.getId())
-                .status(transaction.getStatus())
-                .description(transaction.getDescription())
-                .amount(transaction.getAmount())
-                .balanceLeft(transaction.getBalanceLeft())
-                .currency(transaction.getCurrency())
-                .type(transaction.getType())
-                .failureReason(transaction.getFailureReason())
-                .createdOn(transaction.getCreatedOn())
-                .build();
+        return repository.findAllByOwnerIdOrderByCreatedOnDesc(userId);
     }
 }

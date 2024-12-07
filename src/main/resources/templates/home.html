@@ -76,7 +76,7 @@
         <p class="available-balance-text">Available Balance</p>
       </div>
 
-      <a class="profile-actions-button" href="#" th:classappend="${clickedButton == 'dashboard'} ? 'active' : ''">
+      <a class="profile-actions-button" th:href="@{/wallets}" th:classappend="${clickedButton == 'dashboard'} ? 'active' : ''">
         <p>Open Wallets</p>
         <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
              width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
@@ -115,14 +115,14 @@
         </thead>
         <tbody>
         <tr>
-          <th:block th:switch="${user.subscriptions.getFirst().status.toString()}">
+          <th:block th:switch="${user.subscriptions.get(0).status.toString()}">
             <td th:case="'ACTIVE'"><span class="status active" th:text="'ACTIVE'"></span></td>
             <td th:case="'COMPLETED'"><span class="status completed" th:text="'COMPLETED'"></span></td>
             <td th:case="'TERMINATED'"><span class="status terminated" th:text="'TERMINATED'"></span></td>
           </th:block>
-          <td th:text="${#strings.capitalize(#strings.toLowerCase(user.subscriptions.getFirst().period))}">YEARLY</td>
-          <td th:text="${#numbers.formatDecimal(user.subscriptions.getFirst().price, 1, 'COMMA', 2, 'POINT') + ' ' + user.wallets[0].currency}">0.00 USD</td>
-          <td th:text="${user.subscriptions.getFirst().renewalAllowed ? 'Automatic' : 'Manual'}">Automatic</td>
+          <td th:text="${#strings.capitalize(#strings.toLowerCase(user.subscriptions.get(0).period))}">YEARLY</td>
+          <td th:text="${#numbers.formatDecimal(user.subscriptions.get(0).price, 1, 'COMMA', 2, 'POINT') + ' ' + user.wallets[0].currency}">0.00 USD</td>
+          <td th:text="${user.subscriptions.get(0).renewalAllowed ? 'Automatic' : 'Manual'}">Automatic</td>
         </tr>
         </tbody>
       </table>
@@ -138,11 +138,11 @@
       <div class="details-section">
         <div class="details-section-container">
           <strong>Subscription id: </strong>
-          <p th:text="${user.subscriptions.getFirst().id}">subscription id</p>
+          <p th:text="${user.subscriptions.get(0).id}">subscription id</p>
         </div>
         <div class="details-section-container">
           <strong>Subscribe until: </strong>
-          <p th:text="${#temporals.format(user.subscriptions.getFirst().completedOn, 'dd MMM yyyy HH:mm')}">date that subscription will be completed</p>
+          <p th:text="${#temporals.format(user.subscriptions.get(0).completedOn, 'dd MMM yyyy HH:mm')}">date that subscription will be completed</p>
         </div>
       </div>
     </div>
