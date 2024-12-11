@@ -1,7 +1,6 @@
 package app.wallet.repository;
 
 import app.wallet.model.Wallet;
-import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -12,6 +11,4 @@ public interface WalletRepository extends JpaRepository<Wallet, UUID> {
     List<Wallet> findAllByOwnerId(UUID ownerId);
 
     List<Wallet> findAllByOwnerUsername(String username);
-
-    Optional<Wallet> findByIdAndOwnerId(UUID id, UUID ownerId);
 }

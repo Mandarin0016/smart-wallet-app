@@ -56,8 +56,13 @@ public class TransactionService {
                 .toList();
     }
 
-    public List<Transaction> getAllTransactions(UUID userId) {
+    public List<Transaction> getAllTransactionsByOwnerId(UUID userId) {
 
         return repository.findAllByOwnerIdOrderByCreatedOnDesc(userId);
+    }
+
+    public List<Transaction> getAllTransactions() {
+
+        return repository.findAll();
     }
 }

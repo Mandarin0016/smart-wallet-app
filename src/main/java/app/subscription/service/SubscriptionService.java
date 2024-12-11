@@ -179,4 +179,9 @@ public class SubscriptionService {
 
         return repository.findByOwnerIdOrderByCreatedOnDesc(userId);
     }
+
+    public List<Subscription> getAllSubscriptions() {
+
+        return repository.findAll();
+    }
 }

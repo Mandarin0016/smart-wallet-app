@@ -73,6 +73,7 @@
 .amount-out {
   color: #ff6767;
 }
+
 .wallet-block.new-wallet {
   display: flex;
   align-items: center;
@@ -83,6 +84,16 @@
   color: #888;
   cursor: pointer;
   transition: background-color 0.4s, transform 0.4s;
+  padding: 0;
+}
+
+.wallet-block.new-wallet button{
+  height: 100%;
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: currentColor;
+  cursor: pointer;
 }
 
 .wallet-block.new-wallet:hover {
@@ -91,7 +102,7 @@
   transform: scale(1.02);
 }
 
-.wallet-block.new-wallet:after {
+.wallet-block.new-wallet button:after {
   content: "+";
   font-size: 36px;
   font-weight: bold;

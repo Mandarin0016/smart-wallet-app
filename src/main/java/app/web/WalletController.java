@@ -47,40 +47,7 @@ public class WalletController {
         return modelAndView;
     }
 
-    @GetMapping("/{walletId}/top-up")
-    public ModelAndView topUpWallet(@PathVariable UUID walletId, @RequestParam("amount") BigDecimal amount, HttpSession session) {
-
-        UUID userId = (UUID) session.getAttribute(USER_ID_FROM_SESSION);
-        User user = userService.getById(userId);
-
-        Transaction transaction = walletService.topUp(user, walletId, amount);
-
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.addObject("user", user);
-        modelAndView.addObject("transactionResult", DtoMapper.toTransactionResult(transaction));
-        modelAndView.setViewName("transaction-result");
-
-        return modelAndView;
-    }
-
-    @GetMapping("/{walletId}/switch-status")
-    public ModelAndView switchWalletStatus(@PathVariable UUID walletId, HttpSession session) {
-
-        UUID userId = (UUID) session.getAttribute(USER_ID_FROM_SESSION);
-        User user = userService.getById(userId);
-
-        walletService.switchStatus(user, walletId);
-        Map<UUID, List<Transaction>> walletTransactions = walletService.getLastFourTransactionsForWallets(user.getWallets());
-
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.addObject("user", user);
-        modelAndView.addObject("lastFourTransactions", walletTransactions);
-        modelAndView.setViewName("wallets");
-
-        return modelAndView;
-    }
-
-    @GetMapping("/new-wallet")
+    @PostMapping
     public ModelAndView createNewWallet(HttpSession session) {
 
         UUID userId = (UUID) session.getAttribute(USER_ID_FROM_SESSION);
@@ -91,6 +58,35 @@ public class WalletController {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.addObject("user", user);
         modelAndView.setViewName("home");
+
+        return modelAndView;
+    }
+
+    @PutMapping("/{walletId}/balance")
+    public ModelAndView topUpWallet(@PathVariable UUID walletId, @RequestParam("top-up-amount") BigDecimal topUpAmount, HttpSession session) {
+
+        UUID userId = (UUID) session.getAttribute(USER_ID_FROM_SESSION);
+        User user = userService.getById(userId);
+
+        Transaction transaction = walletService.topUp(walletId, topUpAmount);
+
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.addObject("user", user);
+        modelAndView.addObject("transactionResult", DtoMapper.toTransactionResult(transaction));
+        modelAndView.setViewName("transaction-result");
+
+        return modelAndView;
+    }
+
+    @PutMapping("/{walletId}")
+    public ModelAndView switchWalletStatus(@PathVariable UUID walletId, HttpSession session) {
+
+        UUID userId = (UUID) session.getAttribute(USER_ID_FROM_SESSION);
+
+        walletService.switchStatus(userId, walletId);
+
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("redirect:/wallets");
 
         return modelAndView;
     }

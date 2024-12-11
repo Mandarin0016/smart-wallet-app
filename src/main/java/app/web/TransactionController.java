@@ -37,7 +37,7 @@ public class TransactionController {
         UUID userId = (UUID) session.getAttribute(USER_ID_FROM_SESSION);
         User user = userService.getById(userId);
 
-        List<TransactionResult> transactions = transactionService.getAllTransactions(userId).stream()
+        List<TransactionResult> transactions = transactionService.getAllTransactionsByOwnerId(userId).stream()
                 .map(DtoMapper::toTransactionResult)
                 .collect(Collectors.toList());
 

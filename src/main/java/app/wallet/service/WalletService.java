@@ -53,14 +53,17 @@ public class WalletService {
 
         boolean isDefaultAndAlreadyHaveMaxWallets = subscriptionType == SubscriptionType.DEFAULT && wallets.size() == 1;
         boolean isPremiumAndAlreadyHaveMaxWallets = subscriptionType == SubscriptionType.PREMIUM && wallets.size() == 2;
-        boolean isUltimateAndAlreadyHaveMaxWallets = subscriptionType == SubscriptionType.ULTIMATE && wallets.size() == 3;
+        boolean isUltimateAndAlreadyHaveMaxWallets =
+                subscriptionType == SubscriptionType.ULTIMATE && wallets.size() == 3;
 
-        if (isDefaultAndAlreadyHaveMaxWallets || isPremiumAndAlreadyHaveMaxWallets || isUltimateAndAlreadyHaveMaxWallets) {
+        if (isDefaultAndAlreadyHaveMaxWallets || isPremiumAndAlreadyHaveMaxWallets
+                || isUltimateAndAlreadyHaveMaxWallets) {
             return wallets.get(0);
         }
 
         Wallet newWallet = initializeNewWallet(user);
-        log.info("Successfully created new wallet with id [%s] for user with id [%s]".formatted(newWallet.getId(), user.getId()));
+        log.info("Successfully created new wallet with id [%s] for user with id [%s]".formatted(newWallet.getId(),
+                user.getId()));
 
         return repository.save(newWallet);
     }
@@ -82,7 +85,7 @@ public class WalletService {
 
     public Transaction charge(User user, UUID walletId, BigDecimal amount, String chargeDescription) {
 
-        Wallet wallet = getUserWallet(user.getId(), walletId);
+        Wallet wallet = getWalletById(walletId);
 
         if (wallet.getStatus() == WalletStatus.INACTIVE) {
             String failureReason = "Inactive wallet";
@@ -111,8 +114,9 @@ public class WalletService {
     @Transactional
     public Transaction transferFunds(User sender, TransferRequest transferRequest) {
 
-        Wallet senderWallet = getUserWallet(sender.getId(), transferRequest.getFromWalletId());
-        Optional<Wallet> receiverWalletOptional = walletRepository.findAllByOwnerUsername(transferRequest.getToUsername())
+        Wallet senderWallet = getWalletById(transferRequest.getFromWalletId());
+        Optional<Wallet> receiverWalletOptional = walletRepository.findAllByOwnerUsername(
+                        transferRequest.getToUsername())
                 .stream()
                 .filter(w -> w.getStatus() == WalletStatus.ACTIVE)
                 .findFirst();
@@ -136,7 +140,8 @@ public class WalletService {
         Wallet receiverWallet = receiverWalletOptional.get();
 
         BigDecimal transferTax = calculateTransferTax(sender, transferRequest.getAmount());
-        boolean isEligibleForCountryTax = sender.getCountry() != receiverWallet.getOwner().getCountry() && sender.getSubscriptions().get(0).getType() != SubscriptionType.ULTIMATE;
+        boolean isEligibleForCountryTax = sender.getCountry() != receiverWallet.getOwner().getCountry()
+                && sender.getSubscriptions().get(0).getType() != SubscriptionType.ULTIMATE;
         BigDecimal countryTax = isEligibleForCountryTax
                 ? BigDecimal.valueOf(0.20)
                 : BigDecimal.ZERO;
@@ -180,13 +185,13 @@ public class WalletService {
         return transferAmount.multiply(BigDecimal.valueOf(percentage));
     }
 
-    private Wallet getUserWallet(UUID userId, UUID walletId) {
+    private Wallet getWalletById(UUID walletId) {
 
-        Optional<Wallet> walletOptional = walletRepository.findByIdAndOwnerId(walletId, userId);
+        Optional<Wallet> walletOptional = walletRepository.findById(walletId);
 
         if (walletOptional.isEmpty()) {
-            String message = "User with id [%s] is not associated with wallet with id [%s]".formatted(userId, walletId);
-            throw new DomainException(message, HttpStatus.FORBIDDEN);
+            String message = "Wallet with id [%s] was not found.".formatted(walletId);
+            throw new DomainException(message, HttpStatus.BAD_REQUEST);
         }
 
         return walletOptional.get();
@@ -205,13 +210,13 @@ public class WalletService {
         return walletTransactions;
     }
 
-    public Transaction topUp(User user, UUID walletId, BigDecimal amount) {
+    public Transaction topUp(UUID walletId, BigDecimal amount) {
 
-        Wallet wallet = getUserWallet(user.getId(), walletId);
+        Wallet wallet = getWalletById(walletId);
 
         if (wallet.getStatus() == WalletStatus.INACTIVE) {
 
-            return transactionService.createNewTransaction(user,
+            return transactionService.createNewTransaction(wallet.getOwner(),
                     SMART_WALLET_LTD,
                     wallet.getId().toString(),
                     amount,
@@ -228,7 +233,7 @@ public class WalletService {
 
         walletRepository.save(wallet);
 
-        return transactionService.createNewTransaction(user,
+        return transactionService.createNewTransaction(wallet.getOwner(),
                 SMART_WALLET_LTD,
                 wallet.getId().toString(),
                 amount,
@@ -240,17 +245,23 @@ public class WalletService {
                 null);
     }
 
-    public void switchStatus(User user, UUID walletId) {
+    public void switchStatus(UUID userId, UUID walletId) {
 
-        Wallet wallet = getUserWallet(user.getId(), walletId);
+        Wallet wallet = getWalletById(walletId);
 
-        if (wallet.getStatus() == WalletStatus.ACTIVE) {
-            wallet.setStatus(WalletStatus.INACTIVE);
-        } else {
-            wallet.setStatus(WalletStatus.ACTIVE);
+        if (!wallet.getOwner().getId().equals(userId)) {
+            String message = "User with id [%s] is not associated with wallet with id [%s]".formatted(userId, walletId);
+            throw new DomainException(message, HttpStatus.FORBIDDEN);
         }
+
+        wallet.setStatus(wallet.getStatus() == WalletStatus.ACTIVE ? WalletStatus.INACTIVE : WalletStatus.ACTIVE);
         wallet.setUpdatedOn(LocalDateTime.now());
 
         walletRepository.save(wallet);
+    }
+
+    public List<Wallet> getAllWallets() {
+
+        return walletRepository.findAll();
     }
 }

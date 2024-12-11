@@ -5,9 +5,12 @@ import app.user.service.UserService;
 import app.web.dto.LoginRequest;
 import app.web.dto.RegisterRequest;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.UUID;
@@ -16,9 +19,6 @@ import static app.security.SessionInterceptor.USER_ID_FROM_SESSION;
 
 @Controller
 public class IndexController {
-
-    public static final String GET_INDEX_REDIRECT = "redirect:/";
-    public static final String GET_INDEX_VIEW = "index";
 
     private final UserService userService;
 
@@ -30,7 +30,7 @@ public class IndexController {
     @GetMapping("/")
     public String getIndexPage() {
 
-        return GET_INDEX_VIEW;
+        return "index";
     }
 
     @GetMapping("/home")
@@ -63,10 +63,50 @@ public class IndexController {
         return modelAndView;
     }
 
+    @PostMapping("/login")
+    public ModelAndView login(@Valid LoginRequest loginRequest, BindingResult result, HttpSession session) {
+
+        if (result.hasErrors()) {
+            return new ModelAndView("login");
+        }
+
+        User loggedUser = userService.login(loginRequest);
+        activateUserSession(session, loggedUser.getId());
+
+        return getHomePageForUser(loggedUser);
+    }
+
+    @PostMapping("/register")
+    public ModelAndView register(@Valid RegisterRequest registerRequest, BindingResult result, HttpSession session) {
+
+        if (result.hasErrors()) {
+            return new ModelAndView("register");
+        }
+
+        User registeredUser = userService.register(registerRequest);
+        activateUserSession(session, registeredUser.getId());
+
+        return getHomePageForUser(registeredUser);
+    }
+
     @GetMapping("/logout")
     public String getLogout(HttpSession session) {
 
         session.invalidate();
-        return GET_INDEX_REDIRECT;
+        return "redirect:/";
+    }
+
+    private void activateUserSession(HttpSession session, UUID userId) {
+
+        session.setAttribute(USER_ID_FROM_SESSION, userId);
+        session.setMaxInactiveInterval(30*60);
+    }
+
+    private static ModelAndView getHomePageForUser(User loggedUser) {
+
+        ModelAndView modelAndView = new ModelAndView("redirect:/home");
+        modelAndView.addObject("user", loggedUser);
+
+        return modelAndView;
     }
 }

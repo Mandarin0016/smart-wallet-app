@@ -66,6 +66,7 @@
   display: flex;
   gap: 4px;
   font-size: 14px;
+  font-family: 'Poppins', sans-serif;
   border-radius: 5px;
   border: none;
   cursor: pointer;
@@ -94,6 +95,22 @@
   transition: background 0.9s ease-in-out;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
+
+/*.profile-actions-button button {*/
+/*  display: flex;*/
+/*  align-items: center;*/
+/*  background: transparent;*/
+/*  border: none;*/
+/*  gap: 4px;*/
+/*  color: currentColor;*/
+/*  font-family: 'Poppins', sans-serif;*/
+/*  font-size: 14px;*/
+/*  font-weight: 300;*/
+/*  width: 100%;*/
+/*  height: 100%;*/
+/*  justify-content: center;*/
+/*  cursor: pointer;*/
+/*}*/
 
 .profile-actions.btn.edit {
   background: #6edef5;
@@ -161,6 +178,7 @@
   gap: 4px;
   padding: 8px;
 }
+
 .home-subscription {
   border: none;
   display: flex;
@@ -292,7 +310,8 @@
 }
 
 .styled-table thead {
-  background: radial-gradient(circle at 90% top, #746ab0 0%, #6a61a4 10%, #605899 20%, #56508d 30%, #4c477f 40%, #423f73 50%, #383666 60%, #2e2d5a 70%, #24244d 80%, #1a1a41 90%, #101035 100%););
+  background: radial-gradient(circle at 90% top, #746ab0 0%, #6a61a4 10%, #605899 20%, #56508d 30%, #4c477f 40%, #423f73 50%, #383666 60%, #2e2d5a 70%, #24244d 80%, #1a1a41 90%, #101035 100%);
+);
   color: #ffffff;
   text-transform: uppercase;
   font-weight: 200;
@@ -327,7 +346,8 @@
 
 .status.terminated {
   background-color: #fbe9e7;
-  color: #c62828;  letter-spacing: 0.03em;
+  color: #c62828;
+  letter-spacing: 0.03em;
   border: 1px solid rgba(255, 103, 103, 0.6);
   box-shadow: 0 4px 8px rgba(255, 103, 103, 0.2);
 }

@@ -31,28 +31,34 @@
              th:classappend="${wallet.status == T(app.wallet.model.WalletStatus).ACTIVE} ? 'active-wallet-status' : 'inactive-wallet-status'">
             [wallet status]</p>
         </div>
+
         <div class="wallet-balance">
           <p class="balance"
              th:text="${#numbers.formatDecimal(wallet.balance, 1, 'COMMA', 2, 'POINT') + ' ' + wallet.currency}"></p>
           <p class="available-balance-text">Available Balance</p>
         </div>
+
         <div class="wallet-actions">
-          <a class="profile-actions-button" th:href="@{'/wallets/' + ${wallet.id} + '/top-up?amount=20.00'}">
-            <p>20.00</p>
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrow-up"
-                 viewBox="0 0 16 16">
-              <path fill-rule="evenodd"
-                    d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5"/>
-            </svg>
-          </a>
-          <a class="profile-actions-button" th:href="@{'/wallets/' + ${wallet.id} + '/switch-status'}">
-            <p>Switch</p>
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-toggle-on"
-                 viewBox="0 0 16 16">
-              <path d="M5 3a5 5 0 0 0 0 10h6a5 5 0 0 0 0-10zm6 9a4 4 0 1 1 0-8 4 4 0 0 1 0 8"/>
-            </svg>
-          </a>
+          <form th:action="@{'/wallets/' + ${wallet.id} + '/balance?top-up-amount=20.00'}" th:method="PUT">
+            <button type="submit" class="profile-actions-button">
+              <p>20.00</p>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrow-up"
+                   viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5"/>
+              </svg>
+            </button>
+          </form>
+          <form th:action="@{'/wallets/' + ${wallet.id}}" th:method="PUT">
+            <button type="submit" class="profile-actions-button">
+              <p>Switch</p>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-toggle-on"
+                   viewBox="0 0 16 16">
+                <path d="M5 3a5 5 0 0 0 0 10h6a5 5 0 0 0 0-10zm6 9a4 4 0 1 1 0-8 4 4 0 0 1 0 8"/>
+              </svg>
+            </button>
+          </form>
         </div>
+
         <div class="details-section">
           <div class="details-section-container">
             <strong>Id: </strong>
@@ -63,6 +69,7 @@
             <p th:text="${#temporals.format(wallet.createdOn, 'dd MMM yyyy HH:mm')}">Wallet is created on</p>
           </div>
         </div>
+
         <div class="wallet-activity">
           <th:block th:each="transaction : ${lastFourTransactions[wallet.id]}">
             <div class="activity-entry">
@@ -91,7 +98,12 @@
         </div>
       </div>
     </th:block>
-    <a th:if="${(user.subscriptions.get(0).type.name == 'PREMIUM' && user.wallets.size < 2) || (user.subscriptions.get(0).type.name == 'ULTIMATE' && user.wallets.size < 3)}" th:href="@{/wallets/new-wallet}" class="wallet-block new-wallet"></a>
+
+    <th:block th:if="${(user.subscriptions.get(0).type.name == 'PREMIUM' && user.wallets.size < 2) || (user.subscriptions.get(0).type.name == 'ULTIMATE' && user.wallets.size < 3)}" >
+      <form class="wallet-block new-wallet" th:action="@{/wallets}" method="post">
+        <button type="submit"></button>
+      </form>
+    </th:block>
   </div>
 </main>
 <div class="footer" th:insert="~{fragments/common/footer :: footer}"></div>
