@@ -1,12 +1,9 @@
 package app.web.dto;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Data
-@Getter
-@Setter
+@Builder
 public class UpgradeRequest {
 
     private String subscriptionType;

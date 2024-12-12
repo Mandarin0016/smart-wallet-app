@@ -47,7 +47,7 @@ public class SubscriptionController {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.addObject("user", user);
         modelAndView.addObject("upgradeOptions", upgradeOptions);
-        modelAndView.addObject("upgradeRequest", new UpgradeRequest());
+        modelAndView.addObject("upgradeRequest", UpgradeRequest.builder().build());
         modelAndView.setViewName("upgrade");
 
         return modelAndView;

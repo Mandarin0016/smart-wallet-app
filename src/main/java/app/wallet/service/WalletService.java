@@ -14,7 +14,6 @@ import app.wallet.property.WalletProperties;
 import app.wallet.repository.WalletRepository;
 
 import app.web.dto.TransferRequest;
-import jakarta.transaction.Transactional;
 import java.util.*;
 
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service

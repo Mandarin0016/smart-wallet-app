@@ -11,7 +11,6 @@ import app.wallet.service.WalletService;
 import app.web.dto.LoginRequest;
 import app.web.dto.RegisterRequest;
 import app.web.dto.UserEditRequest;
-import jakarta.transaction.Transactional;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -22,6 +21,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
@@ -70,7 +70,7 @@ public class UserService {
 
         User user = userRepository.save(initializeNewUserAccount(registerRequest));
 
-        Subscription defaultSubscription = subscriptionService.createNewDefaultSubscriptionForNewUser(user);
+        Subscription defaultSubscription = subscriptionService.createDefaultSubscription(user);
         ArrayList<Subscription> userSubscriptions = new ArrayList<>();
         userSubscriptions.add(defaultSubscription);
         user.setSubscriptions(userSubscriptions);

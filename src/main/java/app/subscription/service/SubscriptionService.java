@@ -14,7 +14,6 @@ import app.wallet.service.WalletService;
 import app.web.dto.UpgradeOption;
 import app.web.dto.UpgradeRequest;
 import app.web.dto.UpgradeResult;
-import jakarta.transaction.Transactional;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -23,8 +22,8 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
+import org.springframework.transaction.annotation.Transactional;
 
 import static app.subscription.model.SubscriptionType.*;
 
@@ -45,14 +44,9 @@ public class SubscriptionService {
         this.walletService = walletService;
     }
 
-    public Subscription createNewDefaultSubscriptionForNewUser(User newUser) {
+    public Subscription createDefaultSubscription(User user) {
 
-        Optional<Subscription> optionalSubscription = repository.findByTypeAndOwnerId(DEFAULT, newUser.getId());
-        if (optionalSubscription.isPresent()) {
-            return optionalSubscription.get();
-        }
-
-        Subscription subscription = buildNewUserSubscription(newUser, DEFAULT, properties.getDefaultPeriod(), BigDecimal.ZERO);
+        Subscription subscription = buildNewUserSubscription(user, DEFAULT, properties.getDefaultPeriod(), BigDecimal.ZERO);
         log.info("Successfully created new [%s] subscription with id [%s].".formatted(subscription.getType(), subscription.getId()));
 
         return repository.save(subscription);
@@ -106,8 +100,7 @@ public class SubscriptionService {
     @Transactional
     public UpgradeResult upgrade(User user, UpgradeRequest request) {
 
-        Subscription userSubscription = getCurrentActiveSubscription(user.getId());
-        rejectSameSubscriptionUpgradeRequest(userSubscription, request);
+        Subscription currentUserSubscription = getCurrentActiveSubscription(user.getId());
 
         SubscriptionType desiredSubscriptionType = SubscriptionType.valueOf(request.getSubscriptionType().toUpperCase());
         SubscriptionPeriod desiredSubscriptionPeriod = SubscriptionPeriod.valueOf(request.getSubscriptionPeriod().toUpperCase());
@@ -125,37 +118,25 @@ public class SubscriptionService {
         if (chargeResult.getStatus() == TransactionStatus.FAILED) {
 
             log.warn("Upgrade attempt failed because of [%s].".formatted(chargeResult.getFailureReason()));
-
             return UpgradeResult.builder()
                     .transaction(chargeResult)
-                    .oldSubscription(userSubscription)
-                    .newSubscription(userSubscription)
+                    .oldSubscription(currentUserSubscription)
+                    .newSubscription(currentUserSubscription)
                     .build();
         }
 
         Subscription newUserSubscription = buildNewUserSubscription(user, desiredSubscriptionType, desiredSubscriptionPeriod, price);
-        userSubscription.setCompletedOn(LocalDateTime.now());
-        userSubscription.setStatus(SubscriptionStatus.COMPLETED);
+        currentUserSubscription.setCompletedOn(LocalDateTime.now());
+        currentUserSubscription.setStatus(SubscriptionStatus.COMPLETED);
 
-        repository.save(userSubscription);
+        repository.save(currentUserSubscription);
         repository.save(newUserSubscription);
 
         return UpgradeResult.builder()
                 .transaction(chargeResult)
-                .oldSubscription(userSubscription)
+                .oldSubscription(currentUserSubscription)
                 .newSubscription(newUserSubscription)
                 .build();
-    }
-
-    private void rejectSameSubscriptionUpgradeRequest(Subscription currentSubscription, UpgradeRequest upgradeRequest) {
-
-        boolean isSameType = currentSubscription.getType() == SubscriptionType.valueOf(upgradeRequest.getSubscriptionType().toUpperCase());
-        boolean isSamePeriod = currentSubscription.getPeriod() == SubscriptionPeriod.valueOf(upgradeRequest.getSubscriptionPeriod().toUpperCase());
-
-        if (isSameType && isSamePeriod) {
-            String message = "User with id [%s] is already on subscription of type [%s] and period [%s]".formatted(currentSubscription.getOwner().getId(), currentSubscription.getType(), currentSubscription.getPeriod());
-            throw new DomainException(message, HttpStatus.BAD_REQUEST);
-        }
     }
 
     private Subscription getCurrentActiveSubscription(UUID userId) {
@@ -183,5 +164,32 @@ public class SubscriptionService {
     public List<Subscription> getAllSubscriptions() {
 
         return repository.findAll();
+    }
+
+    public List<Subscription> getAllSubscriptionsForRenewal() {
+
+        return repository.findAllByStatusAndCompletedOnBefore(SubscriptionStatus.ACTIVE, LocalDateTime.now());
+    }
+
+    public void completeSubscription(Subscription subscription) {
+
+        subscription.setStatus(SubscriptionStatus.COMPLETED);
+        subscription.setCompletedOn(LocalDateTime.now());
+
+        repository.save(subscription);
+        log.info("Successfully completed subscription with id [%s].".formatted(subscription.getId()));
+
+        createDefaultSubscription(subscription.getOwner());
+    }
+
+    public void terminateSubscription(Subscription subscription) {
+
+        subscription.setStatus(SubscriptionStatus.TERMINATED);
+        subscription.setCompletedOn(LocalDateTime.now());
+
+        repository.save(subscription);
+        log.info("Successfully terminated subscription with id [%s].".formatted(subscription.getId()));
+
+        createDefaultSubscription(subscription.getOwner());
     }
 }
