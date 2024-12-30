@@ -20,7 +20,7 @@ import org.springframework.web.servlet.ModelAndView;
 import java.util.Map;
 import java.util.UUID;
 
-import static app.security.SessionInterceptor.USER_ID_FROM_SESSION;
+import static app.security.SessionInterceptor.USER_ID_SESSION_ATTRIBUTE;
 
 @Controller
 @RequestMapping("/subscriptions")
@@ -39,7 +39,7 @@ public class SubscriptionController {
     @GetMapping
     public ModelAndView getUpgradePage(HttpSession session) {
 
-        UUID userId = (UUID) session.getAttribute(USER_ID_FROM_SESSION);
+        UUID userId = (UUID) session.getAttribute(USER_ID_SESSION_ATTRIBUTE);
         User user = userService.getById(userId);
 
         Map<String, UpgradeOption> upgradeOptions = subscriptionService.getUpgradeOptions(user.getId());
@@ -56,7 +56,7 @@ public class SubscriptionController {
     @GetMapping("/history")
     public ModelAndView getSubscriptionHistory(HttpSession session) {
 
-        UUID userId = (UUID) session.getAttribute(USER_ID_FROM_SESSION);
+        UUID userId = (UUID) session.getAttribute(USER_ID_SESSION_ATTRIBUTE);
         User user = userService.getById(userId);
 
         List<SubscriptionHistory> subscriptionHistory = subscriptionService.getHistory(user.getId())
@@ -75,7 +75,7 @@ public class SubscriptionController {
     @PostMapping
     public ModelAndView upgrade(UpgradeRequest request, HttpSession session) {
 
-        UUID userId = (UUID) session.getAttribute(USER_ID_FROM_SESSION);
+        UUID userId = (UUID) session.getAttribute(USER_ID_SESSION_ATTRIBUTE);
         User user = userService.getById(userId);
 
         UpgradeResult upgradeResult = subscriptionService.upgrade(user, request);

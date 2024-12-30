@@ -16,7 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.util.UUID;
 
-import static app.security.SessionInterceptor.USER_ID_FROM_SESSION;
+import static app.security.SessionInterceptor.USER_ID_SESSION_ATTRIBUTE;
 
 @Controller
 @RequestMapping("/users")
@@ -33,7 +33,7 @@ public class UserController {
     @RequireAdminRole
     public ModelAndView getAllUsers(HttpSession session) {
 
-        UUID userId = (UUID) session.getAttribute(USER_ID_FROM_SESSION);
+        UUID userId = (UUID) session.getAttribute(USER_ID_SESSION_ATTRIBUTE);
         User loggedUser = userService.getById(userId);
 
         List<UserInformation> users = userService.getAllUsers().stream()
@@ -60,7 +60,7 @@ public class UserController {
     @GetMapping("/profile")
     public ModelAndView getProfile(HttpSession session) {
 
-        UUID userId = (UUID) session.getAttribute(USER_ID_FROM_SESSION);
+        UUID userId = (UUID) session.getAttribute(USER_ID_SESSION_ATTRIBUTE);
         User user = userService.getById(userId);
 
         ModelAndView modelAndView = new ModelAndView();
@@ -74,7 +74,7 @@ public class UserController {
     @PutMapping("/profile")
     public ModelAndView updateProfile(HttpSession session, @Valid UserEditRequest userEditRequest, BindingResult bindingResult) {
 
-        UUID userId = (UUID) session.getAttribute(USER_ID_FROM_SESSION);
+        UUID userId = (UUID) session.getAttribute(USER_ID_SESSION_ATTRIBUTE);
         User user = userService.editUser(userId, userEditRequest);
 
         if (bindingResult.hasErrors()) {

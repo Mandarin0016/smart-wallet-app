@@ -15,7 +15,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.util.UUID;
 
-import static app.security.SessionInterceptor.USER_ID_FROM_SESSION;
+import static app.security.SessionInterceptor.USER_ID_SESSION_ATTRIBUTE;
 
 @Controller
 public class IndexController {
@@ -36,7 +36,7 @@ public class IndexController {
     @GetMapping("/home")
     public ModelAndView getHomePage(HttpSession session) {
 
-        UUID userId = (UUID) session.getAttribute(USER_ID_FROM_SESSION);
+        UUID userId = (UUID) session.getAttribute(USER_ID_SESSION_ATTRIBUTE);
         User user = userService.getById(userId);
 
         ModelAndView modelAndView = new ModelAndView("home");
@@ -73,7 +73,7 @@ public class IndexController {
         User loggedUser = userService.login(loginRequest);
         activateUserSession(session, loggedUser.getId());
 
-        return getHomePageForUser(loggedUser);
+        return redirectToHomeEndpoint();
     }
 
     @PostMapping("/register")
@@ -86,7 +86,7 @@ public class IndexController {
         User registeredUser = userService.register(registerRequest);
         activateUserSession(session, registeredUser.getId());
 
-        return getHomePageForUser(registeredUser);
+        return redirectToHomeEndpoint();
     }
 
     @GetMapping("/logout")
@@ -98,15 +98,12 @@ public class IndexController {
 
     private void activateUserSession(HttpSession session, UUID userId) {
 
-        session.setAttribute(USER_ID_FROM_SESSION, userId);
+        session.setAttribute(USER_ID_SESSION_ATTRIBUTE, userId);
         session.setMaxInactiveInterval(30*60);
     }
 
-    private static ModelAndView getHomePageForUser(User loggedUser) {
+    private static ModelAndView redirectToHomeEndpoint() {
 
-        ModelAndView modelAndView = new ModelAndView("redirect:/home");
-        modelAndView.addObject("user", loggedUser);
-
-        return modelAndView;
+        return new ModelAndView("redirect:/home");
     }
 }

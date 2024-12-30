@@ -15,7 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import static app.security.SessionInterceptor.USER_ID_FROM_SESSION;
+import static app.security.SessionInterceptor.USER_ID_SESSION_ATTRIBUTE;
 
 @Controller
 @RequestMapping("wallets")
@@ -34,7 +34,7 @@ public class WalletController {
     @GetMapping
     public ModelAndView getWallets(HttpSession session) {
 
-        UUID userId = (UUID) session.getAttribute(USER_ID_FROM_SESSION);
+        UUID userId = (UUID) session.getAttribute(USER_ID_SESSION_ATTRIBUTE);
         User user = userService.getById(userId);
 
         Map<UUID, List<Transaction>> walletTransactions = walletService.getLastFourTransactionsForWallets(user.getWallets());
@@ -50,7 +50,7 @@ public class WalletController {
     @PostMapping
     public ModelAndView createNewWallet(HttpSession session) {
 
-        UUID userId = (UUID) session.getAttribute(USER_ID_FROM_SESSION);
+        UUID userId = (UUID) session.getAttribute(USER_ID_SESSION_ATTRIBUTE);
         User user = userService.getById(userId);
 
         walletService.createNewWallet(user);
@@ -65,7 +65,7 @@ public class WalletController {
     @PutMapping("/{walletId}/balance")
     public ModelAndView topUpWallet(@PathVariable UUID walletId, @RequestParam("top-up-amount") BigDecimal topUpAmount, HttpSession session) {
 
-        UUID userId = (UUID) session.getAttribute(USER_ID_FROM_SESSION);
+        UUID userId = (UUID) session.getAttribute(USER_ID_SESSION_ATTRIBUTE);
         User user = userService.getById(userId);
 
         Transaction transaction = walletService.topUp(walletId, topUpAmount);
@@ -81,7 +81,7 @@ public class WalletController {
     @PutMapping("/{walletId}")
     public ModelAndView switchWalletStatus(@PathVariable UUID walletId, HttpSession session) {
 
-        UUID userId = (UUID) session.getAttribute(USER_ID_FROM_SESSION);
+        UUID userId = (UUID) session.getAttribute(USER_ID_SESSION_ATTRIBUTE);
 
         walletService.switchStatus(userId, walletId);
 

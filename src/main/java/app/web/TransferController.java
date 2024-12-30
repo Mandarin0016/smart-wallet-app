@@ -16,7 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.util.UUID;
 
-import static app.security.SessionInterceptor.USER_ID_FROM_SESSION;
+import static app.security.SessionInterceptor.USER_ID_SESSION_ATTRIBUTE;
 
 @Controller
 @RequestMapping("/transfers")
@@ -34,7 +34,7 @@ public class TransferController {
     @GetMapping
     public ModelAndView getTransferPage(HttpSession session) {
 
-        UUID userId = (UUID) session.getAttribute(USER_ID_FROM_SESSION);
+        UUID userId = (UUID) session.getAttribute(USER_ID_SESSION_ATTRIBUTE);
         User user = userService.getById(userId);
 
         ModelAndView modelAndView = new ModelAndView();
@@ -48,7 +48,7 @@ public class TransferController {
     @PostMapping
     public ModelAndView initiateTransfer(@Valid TransferRequest transferRequest, HttpSession session) {
 
-        UUID userId = (UUID) session.getAttribute(USER_ID_FROM_SESSION);
+        UUID userId = (UUID) session.getAttribute(USER_ID_SESSION_ATTRIBUTE);
         User user = userService.getById(userId);
 
         Transaction transaction = walletService.transferFunds(user, transferRequest);

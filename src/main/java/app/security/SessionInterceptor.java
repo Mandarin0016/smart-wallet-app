@@ -19,7 +19,7 @@ import java.util.UUID;
 public class SessionInterceptor implements HandlerInterceptor {
 
     public static final Set<String> UNAUTHENTICATED_ENDPOINTS = Set.of("/login", "/register", "/", "/error");
-    public static final String USER_ID_FROM_SESSION = "user_id";
+    public static final String USER_ID_SESSION_ATTRIBUTE = "user_id";
 
     @Autowired
     private UserService userService;
@@ -33,13 +33,13 @@ public class SessionInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        if (request.getSession(false) == null || request.getSession(false).getAttribute(USER_ID_FROM_SESSION) == null) {
+        if (request.getSession(false) == null || request.getSession(false).getAttribute(USER_ID_SESSION_ATTRIBUTE) == null) {
             response.sendRedirect("/");
             return false;
         }
 
         HttpSession session = request.getSession(false);
-        UUID userIdFromSession = (UUID) session.getAttribute(USER_ID_FROM_SESSION);
+        UUID userIdFromSession = (UUID) session.getAttribute(USER_ID_SESSION_ATTRIBUTE);
         User user = userService.getById(userIdFromSession);
 
         if (!user.isActive()) {
