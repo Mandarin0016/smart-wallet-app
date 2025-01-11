@@ -1,12 +1,10 @@
 package app.user.service;
 
 import app.exception.DomainException;
-import app.subscription.model.Subscription;
 import app.subscription.service.SubscriptionService;
 import app.user.model.User;
 import app.user.property.UserProperties;
 import app.user.repository.UserRepository;
-import app.wallet.model.Wallet;
 import app.wallet.service.WalletService;
 import app.web.dto.LoginRequest;
 import app.web.dto.RegisterRequest;
@@ -18,7 +16,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.transaction.annotation.Transactional;
@@ -70,15 +67,8 @@ public class UserService {
 
         User user = userRepository.save(initializeNewUserAccount(registerRequest));
 
-        Subscription defaultSubscription = subscriptionService.createDefaultSubscription(user);
-        ArrayList<Subscription> userSubscriptions = new ArrayList<>();
-        userSubscriptions.add(defaultSubscription);
-        user.setSubscriptions(userSubscriptions);
-
-        Wallet wallet = walletService.createNewWallet(user);
-        ArrayList<Wallet> userWallets = new ArrayList<>();
-        userWallets.add(wallet);
-        user.setWallets(userWallets);
+        subscriptionService.createDefaultSubscription(user);
+        walletService.createNewWallet(user, true);
 
         log.info("Successfully created new user for username [%s] with id [%s].".formatted(user.getUsername(), user.getId()));
 

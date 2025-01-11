@@ -44,12 +44,12 @@ public class SubscriptionService {
         this.walletService = walletService;
     }
 
-    public Subscription createDefaultSubscription(User user) {
+    public void createDefaultSubscription(User user) {
 
         Subscription subscription = buildNewUserSubscription(user, DEFAULT, properties.getDefaultPeriod(), BigDecimal.ZERO);
         log.info("Successfully created new [%s] subscription with id [%s].".formatted(subscription.getType(), subscription.getId()));
 
-        return repository.save(subscription);
+        repository.save(subscription);
     }
 
     private Subscription buildNewUserSubscription(User owner, SubscriptionType type, SubscriptionPeriod period, BigDecimal price) {

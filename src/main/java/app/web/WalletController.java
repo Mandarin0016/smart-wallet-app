@@ -48,18 +48,14 @@ public class WalletController {
     }
 
     @PostMapping
-    public ModelAndView createNewWallet(HttpSession session) {
+    public String createNewWallet(HttpSession session) {
 
         UUID userId = (UUID) session.getAttribute(USER_ID_SESSION_ATTRIBUTE);
         User user = userService.getById(userId);
 
-        walletService.createNewWallet(user);
+        walletService.createNewWallet(user, false);
 
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.addObject("user", user);
-        modelAndView.setViewName("home");
-
-        return modelAndView;
+        return "redirect:/wallets";
     }
 
     @PutMapping("/{walletId}/balance")
@@ -79,15 +75,12 @@ public class WalletController {
     }
 
     @PutMapping("/{walletId}")
-    public ModelAndView switchWalletStatus(@PathVariable UUID walletId, HttpSession session) {
+    public String switchWalletStatus(@PathVariable UUID walletId, HttpSession session) {
 
         UUID userId = (UUID) session.getAttribute(USER_ID_SESSION_ATTRIBUTE);
 
         walletService.switchStatus(userId, walletId);
 
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("redirect:/wallets");
-
-        return modelAndView;
+        return "redirect:/wallets";
     }
 }

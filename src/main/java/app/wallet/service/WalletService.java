@@ -36,9 +36,9 @@ public class WalletService {
     private final WalletRepository walletRepository;
 
     public WalletService(WalletRepository repository,
-            WalletProperties properties,
-            TransactionService transactionService,
-            WalletRepository walletRepository) {
+                         WalletProperties properties,
+                         TransactionService transactionService,
+                         WalletRepository walletRepository) {
 
         this.repository = repository;
         this.properties = properties;
@@ -46,26 +46,30 @@ public class WalletService {
         this.walletRepository = walletRepository;
     }
 
-    public Wallet createNewWallet(User user) {
+    public void createNewWallet(User user, boolean isForceCreate) {
+
+        // Implement in Exercise thymeleaf adv
+        if (!isForceCreate && !isUserEligibleToUnlockAnotherWallet(user)) {
+            log.warn("User already reached maximum wallet count according to their subscriptions, new wallet wont be created.");
+            return;
+        }
+
+        Wallet newWallet = initializeNewWallet(user);
+        log.info("Successfully created new wallet with id [%s] for user with id [%s]".formatted(newWallet.getId(), user.getId()));
+
+        repository.save(newWallet);
+    }
+
+    public boolean isUserEligibleToUnlockAnotherWallet(User user) {
 
         List<Wallet> wallets = repository.findAllByOwnerId(user.getId());
         SubscriptionType subscriptionType = user.getSubscriptions().get(0).getType();
 
         boolean isDefaultAndAlreadyHaveMaxWallets = subscriptionType == SubscriptionType.DEFAULT && wallets.size() == 1;
         boolean isPremiumAndAlreadyHaveMaxWallets = subscriptionType == SubscriptionType.PREMIUM && wallets.size() == 2;
-        boolean isUltimateAndAlreadyHaveMaxWallets =
-                subscriptionType == SubscriptionType.ULTIMATE && wallets.size() == 3;
+        boolean isUltimateAndAlreadyHaveMaxWallets = subscriptionType == SubscriptionType.ULTIMATE && wallets.size() == 3;
 
-        if (isDefaultAndAlreadyHaveMaxWallets || isPremiumAndAlreadyHaveMaxWallets
-                || isUltimateAndAlreadyHaveMaxWallets) {
-            return wallets.get(0);
-        }
-
-        Wallet newWallet = initializeNewWallet(user);
-        log.info("Successfully created new wallet with id [%s] for user with id [%s]".formatted(newWallet.getId(),
-                user.getId()));
-
-        return repository.save(newWallet);
+        return !isDefaultAndAlreadyHaveMaxWallets && !isPremiumAndAlreadyHaveMaxWallets && !isUltimateAndAlreadyHaveMaxWallets;
     }
 
     private Wallet initializeNewWallet(User owner) {
@@ -120,8 +124,8 @@ public class WalletService {
                 .stream()
                 .filter(w -> w.getStatus() == WalletStatus.ACTIVE)
                 .findFirst();
-        String transferDescription = "%.2f %s from %s".formatted(transferRequest.getAmount(),
-                senderWallet.getCurrency(), sender.getUsername());
+        String transferDescription = "%.2f %s from %s to %s".formatted(transferRequest.getAmount(),
+                senderWallet.getCurrency(), sender.getUsername(), transferRequest.getToUsername());
 
         if (receiverWalletOptional.isEmpty()) {
 
@@ -134,7 +138,7 @@ public class WalletService {
                     TransactionStatus.FAILED,
                     TransactionType.WITHDRAWAL,
                     transferDescription,
-                    "Unable to perform transfer due to criteria not met");
+                    "Receiver by username %s does not exist.".formatted(transferRequest.getToUsername()));
         }
 
         Wallet receiverWallet = receiverWalletOptional.get();
