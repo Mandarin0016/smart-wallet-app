@@ -74,14 +74,12 @@ public class WalletService {
 
     private Wallet initializeNewWallet(User owner) {
 
-        WalletProperties.DefaultWalletProperty defaultWalletProperties = properties.getDefaultWalletProperties();
-
         return Wallet.builder()
                 .id(UUID.randomUUID())
                 .owner(owner)
                 .currency(Currency.getInstance("EUR"))
-                .status(defaultWalletProperties.getDefaultStatus())
-                .balance(defaultWalletProperties.getInitialBalance())
+                .status(properties.getDefaultStatus())
+                .balance(properties.getInitialBalance())
                 .createdOn(LocalDateTime.now())
                 .updatedOn(LocalDateTime.now())
                 .build();
@@ -214,6 +212,7 @@ public class WalletService {
         return walletTransactions;
     }
 
+    @Transactional
     public Transaction topUp(UUID walletId, BigDecimal amount) {
 
         Wallet wallet = getWalletById(walletId);
