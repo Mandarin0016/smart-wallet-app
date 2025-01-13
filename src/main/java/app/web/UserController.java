@@ -57,6 +57,15 @@ public class UserController {
         return "redirect:/users";
     }
 
+    @PutMapping("/{userId}/role")
+    @RequireAdminRole
+    public String changeUserRole(@PathVariable UUID userId) {
+
+        userService.changeUserRole(userId);
+
+        return "redirect:/users";
+    }
+
     @GetMapping("/profile")
     public ModelAndView getProfile(HttpSession session) {
 

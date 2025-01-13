@@ -3,6 +3,7 @@ package app.user.service;
 import app.exception.DomainException;
 import app.subscription.service.SubscriptionService;
 import app.user.model.User;
+import app.user.model.UserRole;
 import app.user.property.UserProperties;
 import app.user.repository.UserRepository;
 import app.wallet.service.WalletService;
@@ -120,6 +121,20 @@ public class UserService {
 
         user.setUpdatedOn(LocalDateTime.now());
         user.setActive(!user.isActive());
+
+        userRepository.save(user);
+    }
+
+    public void changeUserRole(UUID userId) {
+
+        User user = getById(userId);
+
+        user.setUpdatedOn(LocalDateTime.now());
+        if (user.getRole() == UserRole.ADMIN){
+            user.setRole(UserRole.USER);
+        } else {
+            user.setRole(UserRole.ADMIN);
+        }
 
         userRepository.save(user);
     }

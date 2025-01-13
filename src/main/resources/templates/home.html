@@ -22,13 +22,10 @@
   <div class="home-section">
     <div class="single-section-box home-profile-information">
       <div class="profile-header">
-        <img th:src="${#strings.isEmpty(user.profilePicture) ? 'https://cdn4.iconfinder.com/data/icons/famous-character-vol-2-flat/48/Avatar_Famous_Characters-07-512.png' : user.profilePicture}"
-            alt="Profile Picture" class="profile-avatar">
-        <h2 class="profile-name"
-            th:text="${#strings.isEmpty(user.firstName)} ? ${user.username} : ${user.firstName} + ' ' + ${user.lastName}"></h2>
+        <img th:src="${#strings.isEmpty(user.profilePicture) ? 'https://cdn4.iconfinder.com/data/icons/famous-character-vol-2-flat/48/Avatar_Famous_Characters-07-512.png' : user.profilePicture}" alt="Profile Picture" class="profile-avatar">
+        <h2 class="profile-name" th:text="${#strings.isEmpty(user.firstName)} ? ${user.username} : ${user.firstName} + ' ' + ${user.lastName}"></h2>
         <div class="profile-status-role-container">
-          <p th:text="${user.active} ? ACTIVE : INACTIVE"
-             th:classappend="${user.active} ? 'active-profile' : 'inactive-profile'">ACTIVE</p>
+          <p th:text="${user.active} ? ACTIVE : INACTIVE" th:classappend="${user.active} ? 'active-profile' : 'inactive-profile'">ACTIVE</p>
         </div>
         <div class="details-section">
           <div class="details-section-container">
@@ -100,6 +97,7 @@
         </div>
       </div>
     </div>
+
     <div class="single-section-box home-subscription">
       <div class="default-label-box">
         <p th:text="${#strings.toUpperCase(user.subscriptions.get(0).type + ' SUBSCRIPTION')}">[Mock subscription text]</p>
@@ -115,11 +113,10 @@
         </thead>
         <tbody>
         <tr>
-          <th:block th:switch="${user.subscriptions.get(0).status.toString()}">
-            <td th:case="'ACTIVE'"><span class="status active" th:text="'ACTIVE'"></span></td>
-            <td th:case="'COMPLETED'"><span class="status completed" th:text="'COMPLETED'"></span></td>
-            <td th:case="'TERMINATED'"><span class="status terminated" th:text="'TERMINATED'"></span></td>
-          </th:block>
+          <td th:if="${user.subscriptions.get(0).status.toString()} == 'ACTIVE'"><span class="status active" th:text="'ACTIVE'"></span></td>
+          <td th:if="${user.subscriptions.get(0).status.toString()} == 'COMPLETED'"><span class="status completed" th:text="'COMPLETED'"></span></td>
+          <td th:if="${user.subscriptions.get(0).status.toString()} == 'TERMINATED'"><span class="status terminated" th:text="'TERMINATED'"></span></td>
+
           <td th:text="${#strings.capitalize(#strings.toLowerCase(user.subscriptions.get(0).period))}">YEARLY</td>
           <td th:text="${#numbers.formatDecimal(user.subscriptions.get(0).price, 1, 'COMMA', 2, 'POINT') + ' ' + user.wallets[0].currency}">0.00 USD</td>
           <td th:text="${user.subscriptions.get(0).renewalAllowed ? 'Automatic' : 'Manual'}">Automatic</td>
